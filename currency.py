@@ -98,6 +98,13 @@ async def kurs_kz():
 @dp.message_handler(commands=['start'])
 async def echo(message: types.Message):
 
+    user = message.from_user.id
+    users = json.load(open('users.json'))
+    if user not in users:
+        new_users = users+[user]
+        json.dump(new_users, open('users.json', 'w'))
+        print('count_users:', len(new_users))
+
     now_date = str(localtime_to_utc(message.date))
     old_res = json.load(open('result.json'))
     date_diff = datetime.fromisoformat(now_date) - datetime.fromisoformat(old_res['old_date'])
