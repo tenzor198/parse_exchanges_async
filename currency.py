@@ -7,9 +7,10 @@ from aiogram import Bot, Dispatcher, executor, types
 import aiohttp
 import pytz
 import tzlocal
+import os
 from datetime import datetime
 
-API_TOKEN = '5411390712:AAG9Wuq7CpoCtUT7bJemP4oyns4DNRNpaQg'
+API_TOKEN = os.getenv('BOT_TOKEN')
 logging.basicConfig(level=logging.INFO)
 bot = Bot(token=API_TOKEN)
 dp = Dispatcher(bot)
