@@ -1,0 +1,5 @@
+fake_useragent
+aiogram
+bs4
+regex
+aiohttp
