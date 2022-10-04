@@ -101,10 +101,8 @@ async def echo(message: types.Message):
     now_date = str(localtime_to_utc(message.date))
     old_res = json.load(open('result.json'))
     date_diff = datetime.fromisoformat(now_date) - datetime.fromisoformat(old_res['old_date'])
-    print('date_diff', date_diff.total_seconds() / 60)
 
     if date_diff.total_seconds() / 60 < 20:
-        print('if')
         output_message = old_res['result']
     else:
         corona = await corona_curs()
