@@ -103,6 +103,7 @@ async def echo(message: types.Message):
     if user not in users:
         new_users = users+[user]
         json.dump(new_users, open('users.json', 'w'))
+        print('New:', message.from_user.username)
         print('count_users:', len(new_users))
 
     now_date = str(localtime_to_utc(message.date))
