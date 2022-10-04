@@ -3,3 +3,5 @@ aiogram
 bs4
 regex
 aiohttp
+aiosqlite
+sqlalchemy

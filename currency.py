@@ -1,33 +1,24 @@
 import regex
 import json
-import requests
 from bs4 import BeautifulSoup
 from fake_useragent import UserAgent
 import logging
-import os
-from aiogram import Bot
-from aiogram.dispatcher import Dispatcher
-from aiogram.utils.executor import start_webhook
 from aiogram import Bot, Dispatcher, executor, types
-
 import aiohttp
-import asyncio
-# from asyncio import new_event_loop, set_event_loop
-# set_event_loop(new_event_loop())
-# import nest_asyncio
-# nest_asyncio.apply()
-# import nest_asyncio
-# nest_asyncio.apply()
-# __import__('IPython').embed()
+import pytz
+import tzlocal
+from datetime import datetime
 
-API_TOKEN = '5411390712:AAHV0ECGryJWt-XKnlX0sEtnmupWzj26wJc'
-
-# Configure logging
+API_TOKEN = '5411390712:AAG9Wuq7CpoCtUT7bJemP4oyns4DNRNpaQg'
 logging.basicConfig(level=logging.INFO)
-
-# Initialize bot and dispatcher
 bot = Bot(token=API_TOKEN)
 dp = Dispatcher(bot)
+
+
+def localtime_to_utc(dt):
+    localzone = tzlocal.get_localzone()
+    dt = localzone.localize(dt)
+    return dt.astimezone(pytz.utc)
 
 
 async def corona_curs():
@@ -57,6 +48,7 @@ async def corona_curs():
         async with session.get('https://koronapay.com/transfers/online/api/transfers/tariffs', params=params, headers=headers) as resp:
             result = await resp.json()
             return round(1 / result[0]['exchangeRate'], 3)
+
 
 async def kurs_kz():
 
@@ -104,37 +96,29 @@ async def kurs_kz():
 
 @dp.message_handler(commands=['start'])
 async def echo(message: types.Message):
-    corona = await corona_curs()
-    exchanges_max, exchanges = await kurs_kz()
-    output_message = f"""
-    <u>Курс рубля в тенге:</u>
-    <i><b>Золотая корона: {corona}</b></i>
-    <b>Контак:≈ {corona+0.13}</b>
-    <b>В обменниках: {exchanges_max}</b>\n
-    {exchanges}
-    """
+
+    now_date = str(localtime_to_utc(message.date))
+    old_res = json.load(open('result.json'))
+    date_diff = datetime.fromisoformat(now_date) - datetime.fromisoformat(old_res['old_date'])
+    print('date_diff', date_diff.total_seconds() / 60)
+
+    if date_diff.total_seconds() / 60 < 20:
+        print('if')
+        output_message = old_res['result']
+    else:
+        corona = await corona_curs()
+        exchanges_max, exchanges = await kurs_kz()
+        output_message = f"""
+        <u>Курс рубля в тенге:</u>
+        <i><b>Золотая корона: {corona}</b></i>
+        <b>Контак:≈ {corona+0.13}</b>
+        <b>В обменниках: {exchanges_max}</b>\n
+        {exchanges}
+        """
+        json.dump({'old_date': now_date, 'result': output_message}, open('result.json', 'w'))
+
     await message.answer(output_message, parse_mode='html')
 
 
 if __name__ == '__main__':
     executor.start_polling(dp, skip_updates=True)
-
-
-
-
-
-
-# @bot.message_handler(commands=['start'])
-# def start(message):
-#     corona = corona_curs()
-#     exchanges_max, exchanges = kurs_kz()
-#     output_message = f"""
-#     <u>Курс рубля в тенге:</u>
-#     <i><b>Золотая корона: {corona}</b></i>
-#     <b>Контак:≈ {corona+0.13}</b>
-#     <b>В обменниках: {exchanges_max}</b>\n
-#     {exchanges}
-#     """
-#     bot.send_message(message.chat.id, output_message, parse_mode='html')
-#
-# bot.polling(none_stop=True)
