@@ -118,7 +118,7 @@ async def echo(message: types.Message):
         output_message = f"""
         <u>Курс рубля в тенге:</u>
         <i><b>Золотая корона: {corona}</b></i>
-        <b>Контак:≈ {corona+0.13}</b>
+        <b>Контак:≈ {round(corona+0.13, 3)}</b>
         <b>В обменниках: {exchanges_max}</b>\n
         {exchanges}
         """
