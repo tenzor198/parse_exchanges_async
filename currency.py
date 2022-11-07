@@ -153,9 +153,11 @@ async def unistream(currency='KZT'):
     }
     async with aiohttp.ClientSession() as session:
         async with session.post('https://api6.unistream.com/api/v1/transfer/calculate', data=data, headers=headers) as resp:
-            response_kurs = await resp.json(content_type=None)
-            print(response_kurs)
-            rates = response_kurs['fees'][0]['rate']
+            response_kurs = await resp.read()
+                # .json(content_type=None)
+            response_kurs_json = json.loads(response_kurs)
+            print(response_kurs_json)
+            rates = response_kurs_json['fees'][0]['rate']
             return rates
 
 async def output_data(message, currency):
