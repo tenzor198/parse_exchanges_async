@@ -54,7 +54,7 @@ async def corona_curs(currency):
     }
     async with aiohttp.ClientSession() as session:
         async with session.get('https://koronapay.com/transfers/online/api/transfers/tariffs', params=params, headers=headers) as resp:
-            result = await resp.json()
+            result = await resp.json(content_type=None)
             return result[0]['exchangeRate']
 
 
@@ -123,7 +123,7 @@ async def tinkoff(currency='KZT'):
     }
     async with aiohttp.ClientSession() as session:
         async with session.get('https://api.tinkoff.ru/v1/currency_rates', params=params, headers=headers) as resp:
-            response_kurs = await resp.json()
+            response_kurs = await resp.json(content_type=None)
             rates = response_kurs['payload']['rates']
             for rate in rates:
                 if rate['category'] == 'DepositPayments':
@@ -153,7 +153,7 @@ async def unistream(currency='KZT'):
     }
     async with aiohttp.ClientSession() as session:
         async with session.post('https://api6.unistream.com/api/v1/transfer/calculate', data=data, headers=headers) as resp:
-            response_kurs = await resp.json()
+            response_kurs = await resp.json(content_type=None)
             rates = response_kurs['fees'][0]['rate']
             return rates
 
