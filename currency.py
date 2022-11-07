@@ -13,7 +13,7 @@ from aiogram.types import ReplyKeyboardRemove, \
     ReplyKeyboardMarkup, KeyboardButton, \
     InlineKeyboardMarkup, InlineKeyboardButton
 
-API_TOKEN = os.getenv('BOT_TOKEN')
+API_TOKEN = '5411390712:AAHEDIw8x-B2nu5J89gPqFWMvJ7uNpjR-1I'# os.getenv('BOT_TOKEN')
 logging.basicConfig(level=logging.INFO)
 bot = Bot(token=API_TOKEN)
 dp = Dispatcher(bot)
