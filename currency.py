@@ -13,7 +13,7 @@ from aiogram.types import ReplyKeyboardRemove, \
     ReplyKeyboardMarkup, KeyboardButton, \
     InlineKeyboardMarkup, InlineKeyboardButton
 
-API_TOKEN = '5411390712:AAHEDIw8x-B2nu5J89gPqFWMvJ7uNpjR-1I'#os.getenv('BOT_TOKEN')
+API_TOKEN = os.getenv('BOT_TOKEN')
 logging.basicConfig(level=logging.INFO)
 bot = Bot(token=API_TOKEN)
 dp = Dispatcher(bot)
@@ -170,7 +170,7 @@ async def output_data(message, currency):
     old_res = json.load(open(f'result_{currency}.json'))
     date_diff = datetime.fromisoformat(now_date) - datetime.fromisoformat(old_res['old_date'])
 
-    if date_diff.total_seconds() / 60 < 0:#5:
+    if date_diff.total_seconds() / 60 < 5:
         output_message = old_res['result']
     else:
         corona = await corona_curs(currency)
