@@ -102,7 +102,7 @@ async def kurs_kz():
 
 async def tinkoff(currency='KZT'):
     headers = {
-        'User-Agent': 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:106.0) Gecko/20100101 Firefox/106.0',
+        'User-Agent': UserAgent().random,
         'Accept': '*/*',
         'Accept-Language': 'en-US,en;q=0.5',
         # 'Accept-Encoding': 'gzip, deflate, br',
@@ -131,7 +131,7 @@ async def tinkoff(currency='KZT'):
 
 async def unistream(currency='KZT'):
     headers = {
-        'User-Agent': 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:106.0) Gecko/20100101 Firefox/106.0',
+        'User-Agent': UserAgent().random,
         'Accept': '*/*',
         'Accept-Language': 'ru',
         # 'Accept-Encoding': 'gzip, deflate, br',
