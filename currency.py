@@ -156,6 +156,7 @@ async def unistream(currency='KZT'):
             response_kurs = await resp.read()
                 # .json(content_type=None)
             response_kurs_json = json.loads(response_kurs)
+            print(resp.status())
             print(response_kurs_json)
             rates = response_kurs_json['fees'][0]['rate']
             return rates
