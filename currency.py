@@ -9,8 +9,11 @@ import pytz
 import tzlocal
 import os
 from datetime import datetime
+from aiogram.types import ReplyKeyboardRemove, \
+    ReplyKeyboardMarkup, KeyboardButton, \
+    InlineKeyboardMarkup, InlineKeyboardButton
 
-API_TOKEN = os.getenv('BOT_TOKEN')
+API_TOKEN = '5411390712:AAHEDIw8x-B2nu5J89gPqFWMvJ7uNpjR-1I'#os.getenv('BOT_TOKEN')
 logging.basicConfig(level=logging.INFO)
 bot = Bot(token=API_TOKEN)
 dp = Dispatcher(bot)
@@ -22,12 +25,16 @@ def localtime_to_utc(dt):
     return dt.astimezone(pytz.utc)
 
 
-async def corona_curs():
+async def corona_curs(currency):
+    if currency == 'KZT':
+        currency_id = '398'
+    else:
+        currency_id = '840'
     params = {
         'sendingCountryId': 'RUS',
         'sendingCurrencyId': '810',
         'receivingCountryId': 'KAZ',
-        'receivingCurrencyId': '398',
+        'receivingCurrencyId': currency_id,
         'paymentMethod': 'debitCard',
         'receivingAmount': '100000',
         'receivingMethod': 'cash',
@@ -48,11 +55,10 @@ async def corona_curs():
     async with aiohttp.ClientSession() as session:
         async with session.get('https://koronapay.com/transfers/online/api/transfers/tariffs', params=params, headers=headers) as resp:
             result = await resp.json()
-            return round(1 / result[0]['exchangeRate'], 3)
+            return result[0]['exchangeRate']
 
 
 async def kurs_kz():
-
     headers = {
         'User-Agent': UserAgent().random,
         'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8',
@@ -92,12 +98,66 @@ async def kurs_kz():
             output = []
             for exchange in exchanges:
                 output.append(': '.join(str(x) for x in exchange) + '\n')
-            return rub_currency_max, '\n'.join(output[:20])
+            return rub_currency_max, '\n'.join(output[:10])
 
+async def tinkoff(currency='KZT'):
+    headers = {
+        'User-Agent': 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:106.0) Gecko/20100101 Firefox/106.0',
+        'Accept': '*/*',
+        'Accept-Language': 'en-US,en;q=0.5',
+        # 'Accept-Encoding': 'gzip, deflate, br',
+        'Content-type': 'application/x-www-form-urlencoded',
+        'Origin': 'https://www.tinkoff.ru',
+        'Sec-Fetch-Dest': 'empty',
+        'Sec-Fetch-Mode': 'cors',
+        'Sec-Fetch-Site': 'same-site',
+        'Referer': 'https://www.tinkoff.ru/',
+        'Connection': 'keep-alive',
+        # Requests doesn't support trailers
+        # 'TE': 'trailers',
+    }
 
-@dp.message_handler(commands=['start'])
-async def echo(message: types.Message):
+    params = {
+        'from': 'RUB',
+        'to': currency,
+    }
+    async with aiohttp.ClientSession() as session:
+        async with session.get('https://api.tinkoff.ru/v1/currency_rates', params=params, headers=headers) as resp:
+            response_kurs = await resp.json()
+            rates = response_kurs['payload']['rates']
+            for rate in rates:
+                if rate['category'] == 'DepositPayments':
+                    return rate['buy']
 
+async def unistream(currency='KZT'):
+    headers = {
+        'User-Agent': 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:106.0) Gecko/20100101 Firefox/106.0',
+        'Accept': '*/*',
+        'Accept-Language': 'ru',
+        # 'Accept-Encoding': 'gzip, deflate, br',
+        'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
+        'Origin': 'https://unistream.ru',
+        'Connection': 'keep-alive',
+        'Referer': 'https://unistream.ru/',
+        'Sec-Fetch-Dest': 'empty',
+        'Sec-Fetch-Mode': 'cors',
+        'Sec-Fetch-Site': 'cross-site',
+    }
+
+    data = {
+        'senderBankId': '361934',
+        'acceptedCurrency': 'RUB',
+        'withdrawCurrency': currency,
+        'amount': '100',
+        'countryCode': 'KAZ',
+    }
+    async with aiohttp.ClientSession() as session:
+        async with session.post('https://api6.unistream.com/api/v1/transfer/calculate', data=data, headers=headers) as resp:
+            response_kurs = await resp.json()
+            rates = response_kurs['fees'][0]['rate']
+            return rates
+
+async def output_data(message, currency):
     user = message.from_user.id
     users = json.load(open('users.json'))
     if user not in users:
@@ -107,25 +167,63 @@ async def echo(message: types.Message):
         print('count_users:', len(new_users))
 
     now_date = str(localtime_to_utc(message.date))
-    old_res = json.load(open('result.json'))
+    old_res = json.load(open(f'result_{currency}.json'))
     date_diff = datetime.fromisoformat(now_date) - datetime.fromisoformat(old_res['old_date'])
 
-    if date_diff.total_seconds() / 60 < 5:
+    if date_diff.total_seconds() / 60 < 0:#5:
         output_message = old_res['result']
     else:
-        corona = await corona_curs()
+        corona = await corona_curs(currency)
         exchanges_max, exchanges = await kurs_kz()
-        output_message = f"""
-        <u>Курс рубля в тенге:</u>
-        <i><b>Золотая корона: {corona}</b></i>
-        <b>Контак:≈ {round(corona+0.13, 3)}</b>
-        <b>В обменниках: {exchanges_max}</b>\n
-        {exchanges}
-        """
-        json.dump({'old_date': now_date, 'result': output_message}, open('result.json', 'w'))
+        tink = await tinkoff(currency)
+        unistr = await unistream(currency)
+        if currency == 'USD':
+            corona = round(corona, 3)
+            unistr = round(1 / unistr, 3)
+            contact = unistr - 0.03
+            tink = round(1 / tink, 3)
+        else:
+            corona = round(1 / corona, 3)
+            contact = round(unistr-0.01, 3)
+        if currency == 'USD':
+            output_message = f"""
+            <u>Курс рубля в тенге:</u>\n
+            <i><b>Золотая корона: {corona}</b></i>
+            <b>Контакт:≈ {contact}</b>
+            <b>Тинькофф: {tink}</b>
+            <b>Юнистрим: {unistr}</b>
+            """.replace('           ', ' ')
+        else:
+            output_message = f"""
+                <u>Курс рубля в тенге:</u>\n
+                <i><b>Золотая корона: {corona}</b></i>
+                <b>Контакт:≈ {contact}</b>
+                <b>Тинькофф: {tink}</b>
+                <b>Юнистрим: {unistr}</b>
+                <b>В обменниках: {exchanges_max}</b>\n
+                {exchanges}
+                """.replace('           ', ' ')
+        json.dump({'old_date': now_date, 'result': output_message}, open(f'result_{currency}.json', 'w'))
 
     await message.answer(output_message, parse_mode='html')
 
+@dp.message_handler(commands=['start'])
+async def echo(message: types.Message):
+    button_hi = KeyboardButton('Тенге 🇰🇿')
+    add_button = KeyboardButton('Доллары 💰')
+    items = ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True).add(button_hi, add_button)
+    await message.answer('Выберите валюту для перевода рублей', parse_mode='html', reply_markup=items)
+
+
+@dp.message_handler(lambda message: message.text == "Тенге 🇰🇿")
+async def with_puree(message: types.Message):
+    await output_data(message, 'KZT')
+
+
+@dp.message_handler(lambda message: message.text == "Доллары 💰")
+async def with_puree(message: types.Message):
+    await output_data(message, 'USD')
+
 
 if __name__ == '__main__':
-    executor.start_polling(dp, skip_updates=True)
+    executor.start_polling(dp)#, skip_updstore_rating_quantityates=True)
