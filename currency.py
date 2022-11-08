@@ -132,14 +132,15 @@ async def tinkoff(currency='KZT'):
 async def unistream(currency='KZT'):
     with open('proxy.txt') as f:
         proxy = f.read()
+    resp_status, resp = await unistream_post(proxy, currency)
+    if resp_status != 200:
+        proxy = await FreeProxy(country_id=['RU']).get()
+        with open('proxy.txt', 'w') as w:
+            w.write(proxy)
         resp_status, resp = await unistream_post(proxy, currency)
-        if resp_status != 200:
-            proxy = FreeProxy().get()
-            proxy = FreeProxy(country_id=['RU']).get()
-            with open('proxy.txt', 'w') as w:
-                w.write(proxy)
-                resp_status, resp = await unistream_post(proxy, currency)
-                return resp['fees'][0]['rate']
+    print(resp_status, resp)
+    resp_kurs = json.loads(resp)
+    return resp_kurs['fees'][0]['rate']
 
 
 async def unistream_post(proxy, currency='KZT'):
@@ -192,7 +193,7 @@ async def output_data(message, currency):
         if currency == 'USD':
             corona = round(corona, 3)
             unistr = round(1 / unistr, 3)
-            contact = unistr - 0.03
+            contact = round(unistr - 0.03, 3)
             tink = round(1 / tink, 3)
         else:
             corona = round(1 / corona, 3)
