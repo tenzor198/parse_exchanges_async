@@ -116,7 +116,6 @@ async def tinkoff(currency='KZT'):
         # Requests doesn't support trailers
         # 'TE': 'trailers',
     }
-
     params = {
         'from': 'RUB',
         'to': currency,
@@ -138,7 +137,6 @@ async def unistream(currency='KZT'):
         with open('proxy.txt', 'w') as w:
             w.write(proxy)
         resp_status, resp = await unistream_post(proxy, currency)
-    print(resp_status, resp)
     resp_kurs = json.loads(resp)
     return resp_kurs['fees'][0]['rate']
 
@@ -189,7 +187,6 @@ async def output_data(message, currency):
         exchanges_max, exchanges = await kurs_kz()
         tink = await tinkoff(currency)
         unistr = await unistream(currency)
-        print('unistr', unistr)
         if currency == 'USD':
             corona = round(corona, 3)
             unistr = round(1 / unistr, 3)
