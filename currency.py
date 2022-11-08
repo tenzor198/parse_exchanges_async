@@ -188,6 +188,7 @@ async def output_data(message, currency):
         exchanges_max, exchanges = await kurs_kz()
         tink = await tinkoff(currency)
         unistr = await unistream(currency)
+        print('unistr', unistr)
         if currency == 'USD':
             corona = round(corona, 3)
             unistr = round(1 / unistr, 3)
