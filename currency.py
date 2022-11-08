@@ -56,7 +56,7 @@ async def corona_curs(currency):
     }
     async with aiohttp.ClientSession() as session:
         async with session.get('https://koronapay.com/transfers/online/api/transfers/tariffs', params=params, headers=headers) as resp:
-            result = await resp.json(content_type=None)
+            result = await resp.json()
             return result[0]['exchangeRate']
 
 
