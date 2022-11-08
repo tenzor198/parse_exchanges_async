@@ -14,7 +14,7 @@ from aiogram.types import ReplyKeyboardRemove, \
     ReplyKeyboardMarkup, KeyboardButton, \
     InlineKeyboardMarkup, InlineKeyboardButton
 from fp.fp import FreeProxy
-API_TOKEN = os.getenv('BOT_TOKEN')#'5411390712:AAHEDIw8x-B2nu5J89gPqFWMvJ7uNpjR-1I'#
+API_TOKEN = '5411390712:AAHEDIw8x-B2nu5J89gPqFWMvJ7uNpjR-1I'# os.getenv('BOT_TOKEN')
 logging.basicConfig(level=logging.INFO)
 # proxy = FreeProxy(country_id=['RU']).get()
 bot = Bot(token=API_TOKEN)
@@ -56,8 +56,8 @@ async def corona_curs(currency):
     }
     async with aiohttp.ClientSession() as session:
         async with session.get('https://koronapay.com/transfers/online/api/transfers/tariffs', params=params, headers=headers) as resp:
-            result = await resp.json(content_type='text/html')
-            print(result)
+            result = await resp.json() #(content_type='text/html')
+            print('result_corona', result)
             return result[0]['exchangeRate']
 
 
