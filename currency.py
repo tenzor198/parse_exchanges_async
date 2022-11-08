@@ -151,8 +151,11 @@ async def unistream(currency='KZT'):
         'amount': '100',
         'countryCode': 'KAZ',
     }
+    proxies = {
+        "http": os.environ['QUOTAGUARDSTATIC_URL']
+    }
     async with aiohttp.ClientSession() as session:
-        async with session.post('https://api6.unistream.com/api/v1/transfer/calculate', data=data, proxy='http://6npba9upnqe7oo:5qbcs8qd6ao0nmknc2yz7n27oqh@us-east-static-06.quotaguard.com:9293') as resp: #, headers=headers) as resp:
+        async with session.post('https://api6.unistream.com/api/v1/transfer/calculate', data=data, proxies=proxies) as resp: #, headers=headers) as resp:
             response_kurs = await resp.read()
                 # .json(content_type=None)
             print(resp.status)
