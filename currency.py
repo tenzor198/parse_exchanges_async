@@ -152,7 +152,7 @@ async def unistream(currency='KZT'):
         'countryCode': 'KAZ',
     }
     async with aiohttp.ClientSession() as session:
-        async with session.post('https://api6.unistream.com/api/v1/transfer/calculate', data=data, headers=headers) as resp:
+        async with session.post('https://api6.unistream.com/api/v1/transfer/calculate', data=data) as resp: #, headers=headers) as resp:
             response_kurs = await resp.read()
                 # .json(content_type=None)
             print(resp.status)
@@ -180,7 +180,7 @@ async def output_data(message, currency):
         corona = await corona_curs(currency)
         exchanges_max, exchanges = await kurs_kz()
         tink = await tinkoff(currency)
-        # unistr = await unistream(currency)
+        unistr = await unistream(currency)
         if currency == 'USD':
             corona = round(corona, 3)
             # unistr = round(1 / unistr, 3)
