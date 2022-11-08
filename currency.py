@@ -153,7 +153,7 @@ async def unistream(currency='KZT'):
     }
 
     async with aiohttp.ClientSession() as session:
-        async with session.post('https://api6.unistream.com/api/v1/transfer/calculate', data=data, proxy=os.environ['FIXIE_URL']) as resp: #, headers=headers) as resp:
+        async with session.post('https://api6.unistream.com/api/v1/transfer/calculate', data=data, proxy='http://178.32.116.64:3128') as resp: #, headers=headers) as resp:
             response_kurs = await resp.read()
                 # .json(content_type=None)
             print(resp.status)
