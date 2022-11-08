@@ -5,6 +5,7 @@ from fake_useragent import UserAgent
 import logging
 from aiogram import Bot, Dispatcher, executor, types
 import aiohttp
+import asyncio
 import pytz
 import tzlocal
 import os
@@ -13,7 +14,7 @@ from aiogram.types import ReplyKeyboardRemove, \
     ReplyKeyboardMarkup, KeyboardButton, \
     InlineKeyboardMarkup, InlineKeyboardButton
 from fp.fp import FreeProxy
-API_TOKEN = os.getenv('BOT_TOKEN')
+API_TOKEN = '5411390712:AAHEDIw8x-B2nu5J89gPqFWMvJ7uNpjR-1I'#os.getenv('BOT_TOKEN')
 logging.basicConfig(level=logging.INFO)
 # proxy = FreeProxy(country_id=['RU']).get()
 bot = Bot(token=API_TOKEN)
@@ -129,18 +130,6 @@ async def tinkoff(currency='KZT'):
                 if rate['category'] == 'DepositPayments':
                     return rate['buy']
 
-async def unistream(currency='KZT'):
-    with open('proxy.txt') as f:
-        proxy = f.read()
-    resp_status, resp = await unistream_post(proxy, currency)
-    if resp_status != 200:
-        proxy = await FreeProxy(country_id=['RU']).get()
-        with open('proxy.txt', 'w') as w:
-            w.write(proxy)
-        resp_status, resp = await unistream_post(proxy, currency)
-    resp_kurs = json.loads(resp)
-    return resp_kurs['fees'][0]['rate']
-
 
 async def unistream_post(proxy, currency='KZT'):
     headers = {
@@ -163,10 +152,39 @@ async def unistream_post(proxy, currency='KZT'):
         'amount': '100',
         'countryCode': 'KAZ',
     }
+
+    # proxy = FreeProxy(country_id=['RU']).get()
     async with aiohttp.ClientSession() as session:
         async with session.post('https://api6.unistream.com/api/v1/transfer/calculate', data=data, proxy=proxy) as resp: #, headers=headers) as resp:
             response_kurs = await resp.read()
             return resp.status, response_kurs #rates
+
+
+async def unistream(currency='KZT'):
+    with open('proxy.txt') as f:
+        proxy = f.read()
+    # loop = asyncio.get_event_loop()
+    # proxy = FreeProxy(country_id=['RU']).get()
+    try:
+        resp_status, resp = await unistream_post(proxy, currency)
+    except:
+        resp_status = 403
+    while resp_status != 200:
+        print('iff')
+        proxy = FreeProxy(country_id=['RU']).get()
+        with open('proxy.txt', 'w') as w:
+            w.write(proxy)
+        resp_status, resp = await unistream_post(proxy, currency)
+    # if resp_status != 200:
+    #     print('iff')
+    #     proxy = FreeProxy(country_id=['RU']).get()
+    #     with open('proxy.txt', 'w') as w:
+    #         w.write(proxy)
+    #     resp_status, resp = await unistream_post(proxy, currency)
+    # print(resp)
+    resp_kurs = json.loads(resp)
+    return resp_kurs['fees'][0]['rate']
+
 
 async def output_data(message, currency):
     user = message.from_user.id
@@ -181,7 +199,7 @@ async def output_data(message, currency):
     old_res = json.load(open(f'result_{currency}.json'))
     date_diff = datetime.fromisoformat(now_date) - datetime.fromisoformat(old_res['old_date'])
 
-    if date_diff.total_seconds() / 60 < 5:
+    if date_diff.total_seconds() / 60 < 0:
         output_message = old_res['result']
     else:
         corona = await corona_curs(currency)
@@ -237,4 +255,4 @@ async def with_puree(message: types.Message):
 
 
 if __name__ == '__main__':
-    executor.start_polling(dp)#, skip_updstore_rating_quantityates=True)
+    executor.start_polling(dp, skip_updates=True)#, skip_updstore_rating_quantityates=True)
