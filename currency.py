@@ -241,7 +241,7 @@ async def output_data(message, currency):
 @dp.message_handler(commands=['start'])
 async def echo(message: types.Message):
     button_hi = KeyboardButton('Тенге 🇰🇿')
-    add_button = KeyboardButton('Доллары 💰')
+    add_button = KeyboardButton('Доллар 💰')
     items = ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True).add(button_hi, add_button)
     await message.answer('Выберите валюту для перевода рублей', parse_mode='html', reply_markup=items)
 
@@ -251,7 +251,7 @@ async def with_puree(message: types.Message):
     await output_data(message, 'KZT')
 
 
-@dp.message_handler(lambda message: message.text == "Доллары 💰")
+@dp.message_handler(lambda message: message.text == "Доллар 💰")
 async def with_puree(message: types.Message):
     await output_data(message, 'USD')
 
