@@ -15,7 +15,8 @@ from aiogram.types import ReplyKeyboardRemove, \
 from fp.fp import FreeProxy
 API_TOKEN = os.getenv('BOT_TOKEN')
 logging.basicConfig(level=logging.INFO)
-bot = Bot(token=API_TOKEN)
+proxy = FreeProxy(country_id=['RU']).get()
+bot = Bot(token=API_TOKEN, proxy=proxy)
 dp = Dispatcher(bot)
 
 
