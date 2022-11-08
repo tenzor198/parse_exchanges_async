@@ -13,7 +13,7 @@ from aiogram.types import ReplyKeyboardRemove, \
     ReplyKeyboardMarkup, KeyboardButton, \
     InlineKeyboardMarkup, InlineKeyboardButton
 from fp.fp import FreeProxy
-API_TOKEN = '5411390712:AAHEDIw8x-B2nu5J89gPqFWMvJ7uNpjR-1I'# os.getenv('BOT_TOKEN')
+API_TOKEN = os.getenv('BOT_TOKEN')
 logging.basicConfig(level=logging.INFO)
 bot = Bot(token=API_TOKEN)
 dp = Dispatcher(bot)
@@ -130,7 +130,6 @@ async def tinkoff(currency='KZT'):
                     return rate['buy']
 
 async def unistream(currency='KZT'):
-
     with open('proxy.txt') as f:
         proxy = f.read()
         resp_status, resp = await unistream_post(proxy, currency)
@@ -157,7 +156,6 @@ async def unistream_post(proxy, currency='KZT'):
         'Sec-Fetch-Mode': 'cors',
         'Sec-Fetch-Site': 'cross-site',
     }
-
     data = {
         'senderBankId': '361934',
         'acceptedCurrency': 'RUB',
@@ -168,8 +166,6 @@ async def unistream_post(proxy, currency='KZT'):
     async with aiohttp.ClientSession() as session:
         async with session.post('https://api6.unistream.com/api/v1/transfer/calculate', data=data, proxy=proxy) as resp: #, headers=headers) as resp:
             response_kurs = await resp.read()
-            print(resp.status)
-            print(response_kurs)
             return resp.status, response_kurs #rates
 
 async def output_data(message, currency):
@@ -194,27 +190,27 @@ async def output_data(message, currency):
         unistr = await unistream(currency)
         if currency == 'USD':
             corona = round(corona, 3)
-            # unistr = round(1 / unistr, 3)
-            # contact = unistr - 0.03
+            unistr = round(1 / unistr, 3)
+            contact = unistr - 0.03
             tink = round(1 / tink, 3)
         else:
             corona = round(1 / corona, 3)
-            # contact = round(unistr-0.01, 3)
+            contact = round(unistr-0.01, 3)
         if currency == 'USD':
             output_message = f"""
             <u>Курс рубля в тенге:</u>\n
             <i><b>Золотая корона: {corona}</b></i>
-            <b>Контакт:≈ {1}</b>
+            <b>Контакт:≈ {contact}</b>
             <b>Тинькофф: {tink}</b>
-            <b>Юнистрим: {1}</b>
+            <b>Юнистрим: {unistr}</b>
             """.replace('           ', ' ')
         else:
             output_message = f"""
                 <u>Курс рубля в тенге:</u>\n
                 <i><b>Золотая корона: {corona}</b></i>
-                <b>Контакт:≈ {1}</b>
+                <b>Контакт:≈ {contact}</b>
                 <b>Тинькофф: {tink}</b>
-                <b>Юнистрим: {1}</b>
+                <b>Юнистрим: {unistr}</b>
                 <b>В обменниках: {exchanges_max}</b>\n
                 {exchanges}
                 """.replace('           ', ' ')
