@@ -5,3 +5,4 @@ regex
 aiohttp
 pytz
 tzlocal
+free-proxy

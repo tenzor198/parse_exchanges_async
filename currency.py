@@ -12,7 +12,7 @@ from datetime import datetime
 from aiogram.types import ReplyKeyboardRemove, \
     ReplyKeyboardMarkup, KeyboardButton, \
     InlineKeyboardMarkup, InlineKeyboardButton
-
+from fp.fp import FreeProxy
 API_TOKEN = '5411390712:AAHEDIw8x-B2nu5J89gPqFWMvJ7uNpjR-1I'# os.getenv('BOT_TOKEN')
 logging.basicConfig(level=logging.INFO)
 bot = Bot(token=API_TOKEN)
@@ -130,6 +130,20 @@ async def tinkoff(currency='KZT'):
                     return rate['buy']
 
 async def unistream(currency='KZT'):
+
+    with open('proxy.txt') as f:
+        proxy = f.read()
+        resp_status, resp = await unistream_post(proxy, currency)
+        if resp_status != 200:
+            proxy = FreeProxy().get()
+            proxy = FreeProxy(country_id=['RU']).get()
+            with open('proxy.txt', 'w') as w:
+                w.write(proxy)
+                resp_status, resp = await unistream_post(proxy, currency)
+                return resp['fees'][0]['rate']
+
+
+async def unistream_post(proxy, currency='KZT'):
     headers = {
         'User-Agent': UserAgent().random,
         'Accept': '*/*',
@@ -151,16 +165,12 @@ async def unistream(currency='KZT'):
         'amount': '100',
         'countryCode': 'KAZ',
     }
-
     async with aiohttp.ClientSession() as session:
-        async with session.post('https://api6.unistream.com/api/v1/transfer/calculate', data=data, proxy='http://178.32.116.64:3128') as resp: #, headers=headers) as resp:
+        async with session.post('https://api6.unistream.com/api/v1/transfer/calculate', data=data, proxy=proxy) as resp: #, headers=headers) as resp:
             response_kurs = await resp.read()
-                # .json(content_type=None)
             print(resp.status)
             print(response_kurs)
-            response_kurs_json = json.loads(response_kurs)
-            rates = response_kurs_json['fees'][0]['rate']
-            return rates
+            return resp.status, response_kurs #rates
 
 async def output_data(message, currency):
     user = message.from_user.id
