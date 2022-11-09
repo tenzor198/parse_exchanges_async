@@ -157,9 +157,16 @@ async def unistream_post(proxy, currency='KZT'):
 
     # proxy = FreeProxy(country_id=['RU']).get()
     async with aiohttp.ClientSession() as session:
-        async with session.post('https://api6.unistream.com/api/v1/transfer/calculate', data=data, proxy=proxy) as resp: #, headers=headers) as resp:
+        async with session.post('https://api6.unistream.com/api/v1/transfer/calculate', data=data, proxy=proxy, timeout=60) as resp: #, headers=headers) as resp:
             response_kurs = await resp.read()
             return resp.status, response_kurs #rates
+
+async def get_status(proxy, currency):
+    try:
+        resp_status, resp = await unistream_post(proxy, currency)
+    except:
+        resp_status, resp = 403, []
+    return resp_status, resp
 
 
 async def unistream(currency='KZT'):
@@ -167,16 +174,13 @@ async def unistream(currency='KZT'):
         proxy = f.read()
     # loop = asyncio.get_event_loop()
     # proxy = FreeProxy(country_id=['RU']).get()
-    try:
-        resp_status, resp = await unistream_post(proxy, currency)
-    except:
-        resp_status = 403
+    resp_status, resp = get_status(proxy, currency)
     while resp_status != 200:
         print('iff')
         proxy = FreeProxy().get() #country_id=['RU']
         with open('proxy.txt', 'w') as w:
             w.write(proxy)
-        resp_status, resp = await unistream_post(proxy, currency)
+        resp_status, resp = get_status(proxy, currency)
     # if resp_status != 200:
     #     print('iff')
     #     proxy = FreeProxy(country_id=['RU']).get()
