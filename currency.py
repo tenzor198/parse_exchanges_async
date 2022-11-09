@@ -174,13 +174,13 @@ async def unistream(currency='KZT'):
         proxy = f.read()
     # loop = asyncio.get_event_loop()
     # proxy = FreeProxy(country_id=['RU']).get()
-    resp_status, resp = get_status(proxy, currency)
+    resp_status, resp = await get_status(proxy, currency)
     while resp_status != 200:
         print('iff')
         proxy = FreeProxy().get() #country_id=['RU']
         with open('proxy.txt', 'w') as w:
             w.write(proxy)
-        resp_status, resp = get_status(proxy, currency)
+        resp_status, resp = await get_status(proxy, currency)
     # if resp_status != 200:
     #     print('iff')
     #     proxy = FreeProxy(country_id=['RU']).get()
