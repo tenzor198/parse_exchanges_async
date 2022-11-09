@@ -201,7 +201,7 @@ async def output_data(message, currency):
     old_res = json.load(open(f'result_{currency}.json'))
     date_diff = datetime.fromisoformat(now_date) - datetime.fromisoformat(old_res['old_date'])
 
-    if date_diff.total_seconds() / 60 < 5:
+    if date_diff.total_seconds() / 60 < 10:
         output_message = old_res['result']
     else:
         corona = await corona_curs(currency)
@@ -218,7 +218,7 @@ async def output_data(message, currency):
             contact = round(unistr-0.01, 3)
         if currency == 'USD':
             output_message = f"""
-            <u>Курс рубля в тенге:</u>\n
+            <u>Курс рубля к доллару:</u>\n
             <i><b>Золотая корона: {corona}</b></i>
             <b>Контакт:≈ {contact}</b>
             <b>Тинькофф: {tink}</b>
@@ -226,7 +226,7 @@ async def output_data(message, currency):
             """.replace('           ', ' ')
         else:
             output_message = f"""
-                <u>Курс рубля в тенге:</u>\n
+                <u>Курс рубля к тенге:</u>\n
                 <i><b>Золотая корона: {corona}</b></i>
                 <b>Контакт:≈ {contact}</b>
                 <b>Тинькофф: {tink}</b>
