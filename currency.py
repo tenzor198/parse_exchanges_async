@@ -58,7 +58,6 @@ async def corona_curs(currency):
         async with session.get('https://koronapay.com/transfers/online/api/transfers/tariffs', params=params) as resp:
                 # , headers=headers) as resp:
             result = await resp.read() #(content_type='text/html')
-            print('result_corona', result)
             return json.loads(result)[0]['exchangeRate']
 
 
@@ -161,6 +160,7 @@ async def unistream_post(proxy, currency='KZT'):
             response_kurs = await resp.read()
             return resp.status, response_kurs #rates
 
+
 async def get_status(proxy, currency):
     try:
         resp_status, resp = await unistream_post(proxy, currency)
@@ -180,13 +180,7 @@ async def unistream(currency='KZT'):
         proxy = FreeProxy().get() #country_id=['RU']
         resp_status, resp = await get_status(proxy, currency)
         print(proxy)
-    # if resp_status != 200:
-    #     print('iff')
-    #     proxy = FreeProxy(country_id=['RU']).get()
-    #     with open('proxy.txt', 'w') as w:
-    #         w.write(proxy)
-    #     resp_status, resp = await unistream_post(proxy, currency)
-    # print(resp)
+        print(resp_status, resp)
     with open('proxy.txt', 'w') as w:
         w.write(proxy)
     resp_kurs = json.loads(resp)
@@ -218,10 +212,6 @@ async def output_data(message, currency):
             unistr = round(1 / unistr, 3)
             contact = round(unistr - 0.03, 3)
             tink = round(1 / tink, 3)
-        else:
-            corona = round(1 / corona, 3)
-            contact = round(unistr-0.01, 3)
-        if currency == 'USD':
             output_message = f"""
             <u>Курс рубля к доллару:</u>\n
             <i><b>Золотая корона: {corona}</b></i>
@@ -230,6 +220,9 @@ async def output_data(message, currency):
             <b>Юнистрим: {unistr}</b>
             """.replace('           ', ' ')
         else:
+            corona = round(1 / corona, 3)
+            unistr = round(unistr, 3)
+            contact = round(unistr-0.01, 3)
             output_message = f"""
                 <u>Курс рубля к тенге:</u>\n
                 <i><b>Золотая корона: {corona}</b></i>
@@ -242,6 +235,7 @@ async def output_data(message, currency):
         json.dump({'old_date': now_date, 'result': output_message}, open(f'result_{currency}.json', 'w'))
 
     await message.answer(output_message, parse_mode='html')
+
 
 @dp.message_handler(commands=['start'])
 async def echo(message: types.Message):
