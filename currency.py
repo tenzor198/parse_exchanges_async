@@ -80,7 +80,7 @@ async def kurs_kz():
         # 'TE': 'trailers',
     }
     async with aiohttp.ClientSession() as session:
-        async with session.get('https://kurs.kz/', headers=headers) as resp:
+        async with session.get('https://kurs.kz/') as resp:#, headers=headers) as resp:
             response_kurs = await resp.text()
             soup = BeautifulSoup(response_kurs, 'html.parser')
             scripts = soup.select('script')
@@ -124,7 +124,7 @@ async def tinkoff(currency='KZT'):
         'to': currency,
     }
     async with aiohttp.ClientSession() as session:
-        async with session.get('https://api.tinkoff.ru/v1/currency_rates', params=params, headers=headers) as resp:
+        async with session.get('https://api.tinkoff.ru/v1/currency_rates', params=params) as resp:#, headers=headers) as resp:
             response_kurs = await resp.json(content_type=None)
             rates = response_kurs['payload']['rates']
             for rate in rates:
@@ -156,7 +156,7 @@ async def unistream_post(proxy, currency='KZT'):
 
     # proxy = FreeProxy(country_id=['RU']).get()
     async with aiohttp.ClientSession() as session:
-        async with session.post('https://api6.unistream.com/api/v1/transfer/calculate', data=data, proxy=proxy, timeout=120) as resp: #, headers=headers) as resp:
+        async with session.post('https://api6.unistream.com/api/v1/transfer/calculate', data=data, proxy=proxy, timeout=20) as resp: #, headers=headers) as resp:
             response_kurs = await resp.read()
             return resp.status, response_kurs #rates
 
