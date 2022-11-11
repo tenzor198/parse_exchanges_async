@@ -177,10 +177,9 @@ async def unistream(currency='KZT'):
     resp_status, resp = await get_status(proxy, currency)
     while resp_status != 200:
         print('iff')
-        proxy = FreeProxy(country_id=['RU']).get() #country_id=['RU']
-        with open('proxy.txt', 'w') as w:
-            w.write(proxy)
+        proxy = FreeProxy().get() #country_id=['RU']
         resp_status, resp = await get_status(proxy, currency)
+        print(proxy)
     # if resp_status != 200:
     #     print('iff')
     #     proxy = FreeProxy(country_id=['RU']).get()
@@ -188,6 +187,8 @@ async def unistream(currency='KZT'):
     #         w.write(proxy)
     #     resp_status, resp = await unistream_post(proxy, currency)
     # print(resp)
+    with open('proxy.txt', 'w') as w:
+        w.write(proxy)
     resp_kurs = json.loads(resp)
     return resp_kurs['fees'][0]['rate']
 
