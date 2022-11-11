@@ -101,7 +101,7 @@ async def kurs_kz():
             output = []
             for exchange in exchanges:
                 output.append(': '.join(str(x) for x in exchange) + '\n')
-            return rub_currency_max, '\n'.join(output[:10])
+            return rub_currency_max, '\n'.join(output[:5])
 
 async def tinkoff(currency='KZT'):
     headers = {
@@ -177,7 +177,7 @@ async def unistream(currency='KZT'):
     resp_status, resp = await get_status(proxy, currency)
     while resp_status != 200:
         print('iff')
-        proxy = FreeProxy().get() #country_id=['RU']
+        proxy = FreeProxy(rand=True).get() #country_id=['RU']
         resp_status, resp = await get_status(proxy, currency)
         print(proxy)
         print(resp_status, resp)
