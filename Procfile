@@ -1,1 +1,1 @@
-worker: pip install --upgrade fake-useragent | python currency.py
+worker: python currency.py
