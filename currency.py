@@ -177,7 +177,7 @@ async def unistream(currency='KZT'):
     resp_status, resp = await get_status(proxy, currency)
     while resp_status != 200:
         print('iff')
-        proxy = FreeProxy(rand=True).get() #country_id=['RU']
+        proxy = FreeProxy(rand=True, country_id=['RU']).get() #country_id=['RU']
         resp_status, resp = await get_status(proxy, currency)
         print(proxy)
         print(resp_status, resp)
