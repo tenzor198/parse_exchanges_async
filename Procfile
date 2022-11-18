@@ -1,1 +1,1 @@
-worker: python currency.py
+worker: apt-get install openvpn unzip | python currency.py
