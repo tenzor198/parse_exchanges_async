@@ -162,7 +162,7 @@ async def unistream_post(proxy, currency='KZT'):
         'profile': 'unistream',
     }
     headers = {
-        'User-Agent': 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:106.0) Gecko/20100101 Firefox/106.0',
+        'User-Agent': UserAgent().random,
         'Accept': 'application/json, text/javascript, */*; q=0.01',
         'Accept-Language': 'en-US,en;q=0.5',
         # 'Accept-Encoding': 'gzip, deflate, br',
