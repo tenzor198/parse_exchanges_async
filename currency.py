@@ -133,19 +133,36 @@ async def tinkoff(currency='KZT'):
 
 
 async def unistream_post(proxy, currency='KZT'):
-    # headers = {
-    #     'User-Agent': UserAgent().random,
-    #     'Accept': '*/*',
-    #     'Accept-Language': 'ru',
-    #     # 'Accept-Encoding': 'gzip, deflate, br',
-    #     'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
-    #     'Origin': 'https://unistream.ru',
-    #     'Connection': 'keep-alive',
-    #     'Referer': 'https://unistream.ru/',
-    #     'Sec-Fetch-Dest': 'empty',
-    #     'Sec-Fetch-Mode': 'cors',
-    #     'Sec-Fetch-Site': 'cross-site',
-    # }
+    cookies = {
+        '_ym_uid': '1667811927399695118',
+        '_ym_d': '1667811927',
+        'tmr_reqNum': '90',
+        'tmr_lvid': '7ade19053a92eb2fba61a9c1a3d8bbb7',
+        'tmr_lvidTS': '1667811927534',
+        'uni_c2c_source': 'https://www.google.com/',
+        '_ym_isad': '1',
+        '__lhash_': '27797737c3d71f94dc60e669efb0ecb0',
+        'PHPSESSID': 'akhi1p87k2iru6i70nvlcv9v9p',
+        '__hash_': 'bd03af247650909101bedc2c05948914',
+        'tmr_detect': '1%7C1668762862487',
+    }
+
+    headers = {
+        'User-Agent': 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:106.0) Gecko/20100101 Firefox/106.0',
+        'Accept': 'application/json, text/javascript, */*; q=0.01',
+        'Accept-Language': 'en-US,en;q=0.5',
+        # 'Accept-Encoding': 'gzip, deflate, br',
+        'X-Requested-With': 'XMLHttpRequest',
+        'Connection': 'keep-alive',
+        'Referer': 'https://online.unistream.ru/card2cash/?country=KAZ&amount=1000&currency=KZT&utm_source=offline_calc',
+        # Requests sorts cookies= alphabetically
+        # 'Cookie': '_ym_uid=1667811927399695118; _ym_d=1667811927; tmr_reqNum=90; tmr_lvid=7ade19053a92eb2fba61a9c1a3d8bbb7; tmr_lvidTS=1667811927534; uni_c2c_source=https://www.google.com/; _ym_isad=1; __lhash_=27797737c3d71f94dc60e669efb0ecb0; PHPSESSID=akhi1p87k2iru6i70nvlcv9v9p; __hash_=bd03af247650909101bedc2c05948914; tmr_detect=1%7C1668762862487',
+        'Sec-Fetch-Dest': 'empty',
+        'Sec-Fetch-Mode': 'cors',
+        'Sec-Fetch-Site': 'same-origin',
+        # Requests doesn't support trailers
+        # 'TE': 'trailers',
+    }
     data = {
         'senderBankId': '361934',
         'acceptedCurrency': 'RUB',
@@ -163,7 +180,7 @@ async def unistream_post(proxy, currency='KZT'):
     }
     # proxy = FreeProxy(country_id=['RU']).get()
     async with aiohttp.ClientSession() as session:
-        async with session.post('https://online.unistream.ru/card2cash/calculate', params=params, proxy=proxy, timeout=20) as resp:#, data=data) as resp: #, proxy=proxy, timeout=20) as resp: #, headers=headers) as resp:
+        async with session.post('https://online.unistream.ru/card2cash/calculate', headers=headers,  cookies=cookies, params=params, proxy=proxy, timeout=20) as resp:#, data=data) as resp: #, proxy=proxy, timeout=20) as resp: #, headers=headers) as resp:
             response_kurs = await resp.read()
             return resp.status, response_kurs #rates
 
