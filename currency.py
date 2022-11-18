@@ -178,7 +178,30 @@ async def unistream_post(proxy, currency='KZT'):
         'accepted_currency': 'RUB',
         'profile': 'unistream',
     }
-    # proxy = FreeProxy(country_id=['RU']).get()
+    headers = {
+        'authority': 'online.unistream.ru',
+        'accept': 'application/json, text/javascript, */*; q=0.01',
+        'accept-language': 'ru',
+        'origin': 'https://unistream.ru',
+        'referer': 'https://unistream.ru/',
+        'sec-ch-ua': '"Chromium";v="107", "Not=A?Brand";v="24"',
+        'sec-ch-ua-mobile': '?0',
+        'sec-ch-ua-platform': '"Linux"',
+        'sec-fetch-dest': 'empty',
+        'sec-fetch-mode': 'cors',
+        'sec-fetch-site': 'same-site',
+        'user-agent': 'Mozilla/5.0 (iPhone; CPU iPhone OS 9_1 like Mac OS X) AppleWebKit/601.1.46 (KHTML, like Gecko) Version/9.0 Mobile/13B137 Safari/601.1',
+    }
+
+    params = {
+        'destination': 'KAZ',
+        'amount': '1000',
+        'currency': 'KZT',
+        'accepted_currency': 'RUB',
+        'profile': 'unistream',
+    }
+
+# proxy = FreeProxy(country_id=['RU']).get()
     async with aiohttp.ClientSession() as session:
         async with session.post('https://online.unistream.ru/card2cash/calculate', headers=headers, params=params, timeout=20) as resp:#, data=data) as resp: #, proxy=proxy, timeout=20) as resp: #, headers=headers) as resp:
             response_kurs = await resp.read()
