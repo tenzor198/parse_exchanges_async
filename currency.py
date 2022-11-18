@@ -133,19 +133,19 @@ async def tinkoff(currency='KZT'):
 
 
 async def unistream_post(proxy, currency='KZT'):
-    headers = {
-        'User-Agent': UserAgent().random,
-        'Accept': '*/*',
-        'Accept-Language': 'ru',
-        # 'Accept-Encoding': 'gzip, deflate, br',
-        'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
-        'Origin': 'https://unistream.ru',
-        'Connection': 'keep-alive',
-        'Referer': 'https://unistream.ru/',
-        'Sec-Fetch-Dest': 'empty',
-        'Sec-Fetch-Mode': 'cors',
-        'Sec-Fetch-Site': 'cross-site',
-    }
+    # headers = {
+    #     'User-Agent': UserAgent().random,
+    #     'Accept': '*/*',
+    #     'Accept-Language': 'ru',
+    #     # 'Accept-Encoding': 'gzip, deflate, br',
+    #     'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
+    #     'Origin': 'https://unistream.ru',
+    #     'Connection': 'keep-alive',
+    #     'Referer': 'https://unistream.ru/',
+    #     'Sec-Fetch-Dest': 'empty',
+    #     'Sec-Fetch-Mode': 'cors',
+    #     'Sec-Fetch-Site': 'cross-site',
+    # }
     data = {
         'senderBankId': '361934',
         'acceptedCurrency': 'RUB',
@@ -156,7 +156,7 @@ async def unistream_post(proxy, currency='KZT'):
 
     # proxy = FreeProxy(country_id=['RU']).get()
     async with aiohttp.ClientSession() as session:
-        async with session.post('https://api6.unistream.com/api/v1/transfer/calculate/?host=https://cryptic-sierra-81242.herokuapp.com/', data=data, headers=headers) as resp: #, headers=headers) as resp:
+        async with session.post('https://api6.unistream.com/api/v1/transfer/calculate/', data=data, proxy='https://cryptic-sierra-81242.herokuapp.com/', timeout=20) as resp: #, headers=headers) as resp:
             response_kurs = await resp.read()
             return resp.status, response_kurs #rates
 
