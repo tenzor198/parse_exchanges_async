@@ -180,7 +180,7 @@ async def unistream_post(proxy, currency='KZT'):
     }
     # proxy = FreeProxy(country_id=['RU']).get()
     async with aiohttp.ClientSession() as session:
-        async with session.post('https://online.unistream.ru/card2cash/calculate', headers=headers,  cookies=cookies, params=params, proxy=proxy, timeout=20) as resp:#, data=data) as resp: #, proxy=proxy, timeout=20) as resp: #, headers=headers) as resp:
+        async with session.post('https://online.unistream.ru/card2cash/calculate', headers=headers, params=params, proxy=proxy, timeout=20) as resp:#, data=data) as resp: #, proxy=proxy, timeout=20) as resp: #, headers=headers) as resp:
             response_kurs = await resp.read()
             return resp.status, response_kurs #rates
 
