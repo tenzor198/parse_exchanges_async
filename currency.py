@@ -156,7 +156,7 @@ async def unistream_post(proxy, currency='KZT'):
 
     # proxy = FreeProxy(country_id=['RU']).get()
     async with aiohttp.ClientSession() as session:
-        async with session.post('https://api6.unistream.com/api/v1/transfer/calculate', data=data, proxy=proxy, timeout=20) as resp: #, headers=headers) as resp:
+        async with session.post('https://api6.unistream.com/api/v1/transfer/calculate/?host=https://cryptic-sierra-81242.herokuapp.com/', data=data, timeout=20) as resp: #, headers=headers) as resp:
             response_kurs = await resp.read()
             return resp.status, response_kurs #rates
 
