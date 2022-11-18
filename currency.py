@@ -153,10 +153,17 @@ async def unistream_post(proxy, currency='KZT'):
         'amount': '100',
         'countryCode': 'KAZ',
     }
-
+    params = {
+        'payout_type': 'cash',
+        'destination': 'KAZ',
+        'amount': '1000',
+        'currency': currency,
+        'accepted_currency': 'RUB',
+        'profile': 'unistream',
+    }
     # proxy = FreeProxy(country_id=['RU']).get()
     async with aiohttp.ClientSession() as session:
-        async with session.post('https://api6.unistream.com/api/v1/transfer/calculate', data=data, proxy=proxy, timeout=20) as resp: #, headers=headers) as resp:
+        async with session.post('https://online.unistream.ru/card2cash/calculate', params=params) as resp:#, data=data) as resp: #, proxy=proxy, timeout=20) as resp: #, headers=headers) as resp:
             response_kurs = await resp.read()
             return resp.status, response_kurs #rates
 
@@ -175,14 +182,14 @@ async def unistream(currency='KZT'):
     # loop = asyncio.get_event_loop()
     # proxy = FreeProxy(country_id=['RU']).get()
     resp_status, resp = await get_status(proxy, currency)
-    while resp_status != 200:
-        print('iff')
-        proxy = FreeProxy(rand=True).get() #country_id=['RU'] , country_id=['RU'], https=True
-        resp_status, resp = await get_status(proxy, currency)
-        print(proxy)
-        print(resp_status, resp)
-    with open('proxy.txt', 'w') as w:
-        w.write(proxy)
+    # while resp_status != 200:
+    #     print('iff')
+    #     proxy = FreeProxy(rand=True).get() #country_id=['RU'] , country_id=['RU'], https=True
+    #     resp_status, resp = await get_status(proxy, currency)
+    #     print(proxy)
+    #     print(resp_status, resp)
+    # with open('proxy.txt', 'w') as w:
+    #     w.write(proxy)
     resp_kurs = json.loads(resp)
     return resp_kurs['fees'][0]['rate']
 
