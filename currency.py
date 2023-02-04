@@ -42,18 +42,6 @@ async def corona_curs(currency):
         'receivingMethod': 'cash',
         'paidNotificationEnabled': 'true',
     }
-    # headers = {
-    #     'User-Agent': UserAgent().random,
-    #     'Accept': 'application/vnd.cft-data.v2.86+json',
-    #     'Accept-Language': 'en',
-    #     'x-application': 'Qpay-Web/3.0',
-    #     'x-csrf-token': '1fa0cd2ff26e77b9046d17f979af5655',
-    #     'Connection': 'keep-alive',
-    #     'Referer': 'https://koronapay.com/transfers/online/',
-    #     'Sec-Fetch-Dest': 'empty',
-    #     'Sec-Fetch-Mode': 'cors',
-    #     'Sec-Fetch-Site': 'same-origin',
-    # }
     async with aiohttp.ClientSession() as session:
         async with session.get('https://koronapay.com/transfers/online/api/transfers/tariffs', params=params) as resp:
             # , headers=headers) as resp:
@@ -62,23 +50,6 @@ async def corona_curs(currency):
 
 
 async def kurs_kz():
-    # headers = {
-    #     'User-Agent': UserAgent().random,
-    #     'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8',
-    #     'Accept-Language': 'en-US,en;q=0.5',
-    #     # 'Accept-Encoding': 'gzip, deflate, br',
-    #     'Referer': 'https://kurs.kz/',
-    #     'Connection': 'keep-alive',
-    #     # Requests sorts cookies= alphabetically
-    #     # 'Cookie': 'PHPSESSID=lm0occj10cm1l5nbn54mh6g2ma; __utma=155015202.585920995.1664831714.1664831714.1664831714.1; __utmb=155015202.2.10.1664831714; __utmc=155015202; __utmz=155015202.1664831714.1.1.utmcsr=google|utmccn=(organic)|utmcmd=organic|utmctr=(not%20provided); __utmt=1; _ym_uid=1664831714707133073; _ym_d=1664831714; _ym_isad=1; _zero_cc=f8996bd75cbf24; _zero_ss=633b50e2d5cb7.1664831715.1664832096.2; _ym_visorc=w',
-    #     'Upgrade-Insecure-Requests': '1',
-    #     'Sec-Fetch-Dest': 'document',
-    #     'Sec-Fetch-Mode': 'navigate',
-    #     'Sec-Fetch-Site': 'same-origin',
-    #     'Sec-Fetch-User': '?1',
-    #     # Requests doesn't support trailers
-    #     # 'TE': 'trailers',
-    # }
     async with aiohttp.ClientSession() as session:
         async with session.get('https://kurs.kz/') as resp:#, headers=headers) as resp:
             response_kurs = await resp.text()
@@ -104,21 +75,6 @@ async def kurs_kz():
             return rub_currency_max, '\n'.join(output[:5])
 
 async def tinkoff(currency='KZT'):
-    # headers = {
-    #     'User-Agent': UserAgent().random,
-    #     'Accept': '*/*',
-    #     'Accept-Language': 'en-US,en;q=0.5',
-    #     # 'Accept-Encoding': 'gzip, deflate, br',
-    #     'Content-type': 'application/x-www-form-urlencoded',
-    #     'Origin': 'https://www.tinkoff.ru',
-    #     'Sec-Fetch-Dest': 'empty',
-    #     'Sec-Fetch-Mode': 'cors',
-    #     'Sec-Fetch-Site': 'same-site',
-    #     'Referer': 'https://www.tinkoff.ru/',
-    #     'Connection': 'keep-alive',
-    #     # Requests doesn't support trailers
-    #     # 'TE': 'trailers',
-    # }
     params = {
         'from': 'RUB',
         'to': currency,
@@ -133,19 +89,6 @@ async def tinkoff(currency='KZT'):
 
 
 async def unistream_post(proxy, currency='KZT'):
-    # headers = {
-    #     'User-Agent': UserAgent().random,
-    #     'Accept': '*/*',
-    #     'Accept-Language': 'ru',
-    #     # 'Accept-Encoding': 'gzip, deflate, br',
-    #     'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
-    #     'Origin': 'https://unistream.ru',
-    #     'Connection': 'keep-alive',
-    #     'Referer': 'https://unistream.ru/',
-    #     'Sec-Fetch-Dest': 'empty',
-    #     'Sec-Fetch-Mode': 'cors',
-    #     'Sec-Fetch-Site': 'cross-site',
-    # }
     data = {
         'senderBankId': '361934',
         'acceptedCurrency': 'RUB',
