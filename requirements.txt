@@ -6,3 +6,4 @@ aiohttp
 pytz
 tzlocal
 free-proxy
+enum
